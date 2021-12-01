@@ -1,0 +1,2 @@
+# pythonBrowserBasedUrlTester
+This is a simple code to automatically browse specific website. you can give url and number of time it should open in browser. You can increase percentage top of given browsing number. It will make a folder in you desktop and each time it will save the log with date and time. File name will be accordingly date and time.  This code prevent the system from sleep while running and make the system sleep after completion. Thanks. www.nabilbd.com 
