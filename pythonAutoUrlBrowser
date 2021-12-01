@@ -1,0 +1,205 @@
+# -*- coding: utf-8 -*-
+"""
+This is a silly code to practice python.
+This is a simple code to automatically browse specific website. you can give url and number of time it should open in browser. 
+You can increase percentage top of given browsing number. It will make a folder in you desktop and each time it will save the log with date and time. 
+File name will be accordingly date and time. This code prevent the system from sleep while running and make the system sleep after completion
+
+@author: Syed Razwanul Haque (Nabil)
+https://www.nabilbd.com
+facebook: https://www.fb.com/Nabilphysics
+linkdin: https://www.linkedin.com/in/nabilphysics/
+"""
+import webbrowser
+import time
+import keyboard
+import os
+import os.path
+from datetime import datetime
+
+class WindowsInhibitor:
+    '''Prevent OS sleep/hibernate in windows; code from:
+    https://github.com/h3llrais3r/Deluge-PreventSuspendPlus/blob/master/preventsuspendplus/core.py
+    API documentation:
+    https://msdn.microsoft.com/en-us/library/windows/desktop/aa373208(v=vs.85).aspx'''
+    ES_CONTINUOUS = 0x80000000
+    ES_SYSTEM_REQUIRED = 0x00000001
+
+    def __init__(self):
+        pass
+
+    def inhibit(self):
+        import ctypes
+        #print("Preventing Windows from going to sleep")
+        ctypes.windll.kernel32.SetThreadExecutionState(
+            WindowsInhibitor.ES_CONTINUOUS | \
+            WindowsInhibitor.ES_SYSTEM_REQUIRED)
+
+    def uninhibit(self):
+        import ctypes
+        print("Allowing Windows to go to sleep")
+        ctypes.windll.kernel32.SetThreadExecutionState(
+            WindowsInhibitor.ES_CONTINUOUS)
+        
+save_path = r'C:/Users/User/Desktop/autoBrowserLog' 
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
+
+
+now = datetime.now() # current date and time
+dateTime = now.strftime("%m%d%YT%H%M")
+completeNameFileName = os.path.join(save_path, dateTime+".txt")        
+logFile = open(completeNameFileName, "w")
+
+
+x = 1
+i = 0
+timeGapOfHit = 7 # in secornds , after this seconds it will browse another website
+websiteCategoryApercentage = 1 #% increase percentage if necessary
+websiteCategoryBpercentage = 1 #%
+
+''' Edit Number of Hit Here '''
+website1 = ("https://www.google.com/", 3) #(website, number of time browse)
+website2 = ("https://www.facebook.com/", 2)#(website, number of time browse)
+
+
+website3 = ("https://www.twitter.com", 6)#60 (website, number of time browse)
+website4 = ("https://www.amazon.com", 4)#(website, number of time browse)
+website5 = ('https://www.linkdin.com', 3)#(website, number of time browse)
+website6 = ('https://www.pcbway.com/', 4)#(website, number of time browse)
+website7 = ('https://www.wikipidia.org', 6)#(website, number of time browse)
+website8 = ('https://www.jlcpcb.com/cpp', 3)#(website, number of time browse)
+website9 = ('https://www.pcbway.com/', 5)#(website, number of time browse)
+
+
+    
+    
+''' Calculating Number of hit with given percentage '''
+numberOfHit = (website1[1]+(website1[1]*(websiteCategoryApercentage/100)), 
+             website3[1]+(website3[1]*(websiteCategoryBpercentage/100)),
+             website4[1]+(website4[1]*(websiteCategoryBpercentage/100)) , 
+             website5[1]+(website5[1]*(websiteCategoryBpercentage/100)),
+             website6[1]+(website6[1]*(websiteCategoryBpercentage/100)),
+             website7[1]+(website7[1]*(websiteCategoryBpercentage/100)),
+             website8[1]+(website8[1]*(websiteCategoryBpercentage/100)),
+             website9[1]+(website9[1]*(websiteCategoryBpercentage/100)),
+             website2[1]+(website2[1]*(websiteCategoryApercentage/100))) 
+
+totalNumberOfHit = 0
+for x in range(0, len(numberOfHit)):
+    totalNumberOfHit = totalNumberOfHit + numberOfHit[x];
+totalTimeForOperation = round((totalNumberOfHit * timeGapOfHit)/60 , 2) #Minutes
+
+''' Print Summary '''
+summary = "Total No of Hit: {} Total Time of Operation: {} Minutes"
+printSummary = summary.format(int(totalNumberOfHit),totalTimeForOperation)
+print(printSummary)
+logFile.write(printSummary + "\n")
+
+
+''' Function For Main Operation. ToDo: Change Function Name to a Miningful name '''
+def totalRemainingTime(x,y,timeLap,website):
+    webbrowser.open(website)
+    time.sleep(timeGapOfHit)
+    keyboard.press_and_release('ctrl+w') # closes the last tab
+    global i
+    i = i + 1
+    totalRemainingTime = round(totalTimeForOperation - (i * (timeGapOfHit/60)), 2)
+    totalPrint = "({}/{}) {}% Total Rem Time: {}/{} Min, Hit {}/{} Remaining:{} Min {}"
+    percentageOfCompletion = round((100/totalNumberOfHit)*i, 2)
+    totalPrint = totalPrint.format(i,int(totalNumberOfHit) ,percentageOfCompletion, totalRemainingTime,totalTimeForOperation,x,y,timeLap,website)
+    if os.name == 'nt':
+        osSleep = WindowsInhibitor()
+        osSleep.inhibit()
+    return totalPrint
+ 
+#website 1
+y = int(numberOfHit[0])
+website = website1[0]
+for x in range(1, y + 1):
+    timeLap = round((((y*timeGapOfHit)-(timeGapOfHit * x))/60), 2)
+    printInfo = totalRemainingTime(x,y,timeLap,website)
+    print(printInfo)
+    logFile.write(printInfo +"\n")
+ 
+
+# another website
+y = int(numberOfHit[1]) # 1= 2nd postion of tuple calculating from numberofHit tuple
+website = website3[0]
+for x in range(1, y + 1):
+    timeLap = round((((y*timeGapOfHit)-(timeGapOfHit * x))/60), 2)
+    printInfo = totalRemainingTime(x,y,timeLap,website)
+    print(printInfo)
+    logFile.write(printInfo +"\n")
+    
+# website4
+y = int(numberOfHit[2]) 
+website = website4[0]
+for x in range(1, y + 1):
+    timeLap = round((((y*timeGapOfHit)-(timeGapOfHit * x))/60), 2)
+    printInfo = totalRemainingTime(x,y,timeLap,website)
+    print(printInfo)
+    logFile.write(printInfo +"\n")
+
+# website5
+y = int(numberOfHit[3]) # 3 = website5
+website = website5[0]
+for x in range(1, y + 1):
+    timeLap = round((((y*timeGapOfHit)-(timeGapOfHit * x))/60), 2)
+    printInfo = totalRemainingTime(x,y,timeLap,website)
+    print(printInfo)
+    logFile.write(printInfo +"\n")
+
+# website6
+y = int(numberOfHit[4]) # 4 = website6
+website = website6[0]
+for x in range(1, y + 1):
+    timeLap = round((((y*timeGapOfHit)-(timeGapOfHit * x))/60), 2)
+    printInfo = totalRemainingTime(x,y,timeLap,website)
+    print(printInfo)
+    logFile.write(printInfo +"\n") 
+
+# website7
+y = int(numberOfHit[5]) # 5 = website7
+website = website7[0]
+for x in range(1, y + 1):
+    timeLap = round((((y*timeGapOfHit)-(timeGapOfHit * x))/60), 2)
+    printInfo = totalRemainingTime(x,y,timeLap,website)
+    print(printInfo)
+    logFile.write(printInfo +"\n")
+    
+# website8
+y = int(numberOfHit[6]) # 6 = website8
+website = website8[0]
+for x in range(1, y + 1):
+    timeLap = round((((y*timeGapOfHit)-(timeGapOfHit * x))/60), 2)
+    printInfo = totalRemainingTime(x,y,timeLap,website)
+    print(printInfo)
+    logFile.write(printInfo +"\n")   
+    
+# website9
+y = int(numberOfHit[7]) # 7 = website9
+website = website9[0]
+for x in range(1, y + 1):
+    timeLap = round((((y*timeGapOfHit)-(timeGapOfHit * x))/60), 2)
+    printInfo = totalRemainingTime(x,y,timeLap,website)
+    print(printInfo)
+    logFile.write(printInfo +"\n")
+    
+# website2
+y = int(numberOfHit[8]) # 8 = website2
+website = website2[0]
+for x in range(1, y + 1):
+    timeLap = round((((y*timeGapOfHit)-(timeGapOfHit * x))/60), 2)
+    printInfo = totalRemainingTime(x,y,timeLap,website)
+    print(printInfo)
+    logFile.write(printInfo +"\n")    
+
+
+with open(completeNameFileName, 'r') as f:
+     data = f.read()
+f.closed 
+logFile.close()
+time.sleep(10)
+os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0") 
+
